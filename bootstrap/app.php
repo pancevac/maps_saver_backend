@@ -23,7 +23,7 @@ $app = new Laravel\Lumen\Application(
 
 // $app->withFacades();
 
-// $app->withEloquent();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +75,17 @@ $app->singleton(
 | totally optional, so you are not required to uncomment this line.
 |
 */
+
+
+/**
+ * Register package providers
+ */
+$app->register(Laravel\Tinker\TinkerServiceProvider::class);
+// Register lumen commands provider for dev env.
+if (env('APP_ENV') === 'local') {
+    $app->bind(Illuminate\Database\ConnectionResolverInterface::class, Illuminate\Database\ConnectionResolver::class);
+    $app->register(Niellles\LumenCommands\LumenCommandsServiceProvider::class);
+}
 
 // $app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
