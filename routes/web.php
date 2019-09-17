@@ -14,3 +14,10 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->post('login', 'Auth\LoginController@login');
+$router->post('register', 'Auth\RegisterController@register');
+
+$router->get('user', ['middleware' => 'auth', function (\Illuminate\Http\Request $request) {
+    return $request->user();
+}]);
