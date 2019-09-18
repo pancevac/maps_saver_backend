@@ -21,3 +21,28 @@ $router->post('register', 'Auth\RegisterController@register');
 $router->get('user', ['middleware' => 'auth', function (\Illuminate\Http\Request $request) {
     return $request->user();
 }]);
+
+$router->get('trips', [
+    'as' => 'trips.index',
+    'uses' => 'TripsController@index'
+]);
+$router->post('trips', [
+    'as' => 'trips.store',
+    'uses' => 'TripsController@store'
+]);
+$router->get('trips/{id}', [
+    'as' => 'trips.show',
+    'uses' => 'TripsController@show'
+]);
+$router->put('trips/{id}', [
+    'as' => 'trips.update',
+    'uses' => 'TripsController@update'
+]);
+$router->delete('trips/{id}', [
+    'as' => 'trips.destroy',
+    'uses' => 'TripsController@destroy'
+]);
+$router->get('trips/gpx/{id}', [
+    'as' => 'trips.gpx',
+    'uses' => 'TripsController@getGpx'
+]);
