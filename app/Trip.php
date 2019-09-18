@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Scopes\OwnerScope;
 use Illuminate\Database\Eloquent\Model;
 
 class Trip extends Model
@@ -26,6 +27,24 @@ class Trip extends Model
     protected $casts = [
         'metadata' => 'array',
     ];
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new OwnerScope);
+
+        static::deleting(function ($trip) {
+            $trip->tracks->each->delete();
+            $trip->routes->each->delete();
+            $trip->waypoints->each->delete();
+        });
+    }
 
     /**
      * Get the tracks for the trip.

@@ -7,10 +7,14 @@ use Illuminate\Http\Request;
 
 class TripsController extends Controller
 {
-
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
-        //
+        return response()->json([
+            'trips' => Trip::latest()->get()
+        ]);
     }
 
     public function show($id)

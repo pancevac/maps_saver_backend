@@ -24,25 +24,31 @@ $router->get('user', ['middleware' => 'auth', function (\Illuminate\Http\Request
 
 $router->get('trips', [
     'as' => 'trips.index',
+    'middleware' => 'auth',
     'uses' => 'TripsController@index'
 ]);
 $router->post('trips', [
     'as' => 'trips.store',
+    'middleware' => 'auth',
     'uses' => 'TripsController@store'
 ]);
 $router->get('trips/{id}', [
     'as' => 'trips.show',
+    'middleware' => 'auth',
     'uses' => 'TripsController@show'
 ]);
 $router->put('trips/{id}', [
     'as' => 'trips.update',
+    'middleware' => 'auth',
     'uses' => 'TripsController@update'
 ]);
 $router->delete('trips/{id}', [
     'as' => 'trips.destroy',
+    'middleware' => 'auth',
     'uses' => 'TripsController@destroy'
 ]);
 $router->get('trips/gpx/{id}', [
     'as' => 'trips.gpx',
+    'middleware' => 'auth',
     'uses' => 'TripsController@getGpx'
 ]);
