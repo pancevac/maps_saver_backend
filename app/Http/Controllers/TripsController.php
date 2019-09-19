@@ -85,9 +85,32 @@ class TripsController extends Controller
         return response()->json(['success' => 'Successfully saved trip!']);
     }
 
-    public function update($id, Request $request)
+    /**
+     * @param int $id
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function update(int $id, Request $request)
     {
-        //
+        $trip = Trip::findOrFail($id);
+
+        $this->validate($request, [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('trips', 'name')
+                    ->where('user_id', Auth::id())
+                    ->ignoreModel($trip)
+            ],
+        ]);
+
+        $trip->update([
+            'name' => $request->get('name')
+        ]);
+
+        return response()->json(['success' => 'Trip successfully updated.']);
     }
 
     /**

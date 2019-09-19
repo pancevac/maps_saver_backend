@@ -159,6 +159,56 @@ class InteractsWithTripsTest extends \TestCase
     }
 
     /** @test */
+    function a_logged_user_can_update_his_trip_name()
+    {
+        $this->signIn($this->user);
+
+        $trip = factory(\App\Trip::class)->create(['user_id' => $this->user->id]);
+
+        $modifiedTrip = factory(\App\Trip::class)->make(['user_id' => $this->user->id]);
+
+        $request = $this->put(
+            route('trips.update', ['id' => $trip]),
+            ['name' => $modifiedTrip->name]
+        );
+
+        $request->seeJson(['success' => 'Trip successfully updated.']);
+    }
+
+    /** @test */
+    function a_logged_user_can_not_update_trip_name_same_as_any_existing_trip_name()
+    {
+        $this->signIn($this->user);
+
+        $trip = factory(\App\Trip::class)->create(['user_id' => $this->user->id]);
+        $anotherTrip = factory(\App\Trip::class)->create(['user_id' => $this->user->id]);
+
+        $request = $this->put(
+            route('trips.update', ['id' => $trip]),
+            ['name' => $anotherTrip->name]
+        );
+
+        $request->seeJsonEquals(['name' => ['The name has already been taken.']]);
+    }
+
+    /** @test */
+    function a_logged_user_can_not_update_somebody_else_trip_name()
+    {
+        $this->signIn($this->user);
+
+        $anotherUser = factory(\App\User::class)->create();
+
+        $trip = factory(\App\Trip::class)->create(['user_id' => $anotherUser->id]);
+
+        $request = $this->put(
+            route('trips.update', ['id' => $trip]),
+            ['name' => $trip->name]
+        );
+
+        $request->seeStatusCode(404);
+    }
+
+    /** @test */
     function a_logged_user_can_delete_his_trip()
     {
         $this->signIn($this->user);
