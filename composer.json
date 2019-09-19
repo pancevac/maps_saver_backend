@@ -9,7 +9,8 @@
         "appzcoder/lumen-routes-list": "^1.0",
         "dusterio/lumen-passport": "^0.2.14",
         "laravel/lumen-framework": "5.8.*",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "sibyx/phpgpx": "@RC"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.4",
