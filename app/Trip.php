@@ -93,4 +93,42 @@ class Trip extends Model
     {
         return route('trips.gpx', $this);
     }
+
+    /**
+     * Create tracks with the points for the trip.
+     *
+     * @param array $tracks
+     */
+    public function createTracks(array $tracks)
+    {
+        $savedTracks = $this->tracks()->createMany($tracks);
+
+        $savedTracks->each(function (Track $track, int $key) use ($tracks) {
+            $track->points()->createMany($tracks[$key]['points']);
+        });
+    }
+
+    /**
+     * Create routes with the points for the trip.
+     *
+     * @param array $routes
+     */
+    public function createRoutes(array $routes)
+    {
+        $savedRoutes = $this->routes()->createMany($routes);
+
+        $savedRoutes->each(function (Route $route, int $key) use ($routes) {
+            $route->points()->createMany($routes[$key]['points']);
+        });
+    }
+
+    /**
+     * Create waypoints for the trip.
+     *
+     * @param array $waypoints
+     */
+    public function createWaypoints(array $waypoints)
+    {
+        $this->waypoints()->createMany($waypoints);
+    }
 }

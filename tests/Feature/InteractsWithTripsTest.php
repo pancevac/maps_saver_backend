@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 
+use Illuminate\Http\UploadedFile;
+use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
+
 class InteractsWithTripsTest extends \TestCase
 {
     protected $user;
@@ -54,5 +57,28 @@ class InteractsWithTripsTest extends \TestCase
     {
         $this->get(route('trips.index'))
             ->assertResponseStatus(401);
+    }
+
+    /** @test */
+    function a_logged_user_can_create_trip()
+    {
+        $this->signIn($this->user);
+
+        $response = $this->post(route('trips.store'), [
+            'name' => 'My test trip',
+            'trip' => UploadedFile::createFromBase(
+                new SymfonyUploadedFile(
+                    storage_path('example_trip.gpx'),
+                    'trip.gpx'
+                ),
+                true
+            )
+        ]);
+
+        $response->seeJson(['success' => 'Successfully saved trip!']);
+
+        $this->seeInDatabase('trips', [
+            'user_id' => $this->user->getKey()
+        ]);
     }
 }
