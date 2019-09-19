@@ -7,6 +7,7 @@ use App\Trip;
 use App\Utils\GpxConverter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class TripsController extends Controller
 {
@@ -36,10 +37,11 @@ class TripsController extends Controller
     public function store(Request $request, GpxConverter $gpxConverter)
     {
         $this->validate($request, [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', Rule::unique('trips', 'name')->where('user_id', Auth::id())],
             'trip' => ['required', new IsGpxFile]
         ]);
 
+        // Try to load coordinates from gpx file
         try {
             $gpxConverter->load();
         } catch (\Exception $e) {

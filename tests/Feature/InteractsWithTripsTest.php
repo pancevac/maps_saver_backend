@@ -81,4 +81,34 @@ class InteractsWithTripsTest extends \TestCase
             'user_id' => $this->user->getKey()
         ]);
     }
+
+    /** @test */
+    function a_logged_user_can_not_create_trip_with_same_name()
+    {
+        $this->signIn($this->user);
+
+        $firstResponse = $this->post(route('trips.store'), [
+            'name' => 'My test trip',
+            'trip' => UploadedFile::createFromBase(
+                new SymfonyUploadedFile(
+                    storage_path('example_trip.gpx'),
+                    'trip.gpx'
+                ),
+                true
+            )
+        ]);
+
+        $secondResponse = $this->post(route('trips.store'), [
+            'name' => 'My test trip',
+            'trip' => UploadedFile::createFromBase(
+                new SymfonyUploadedFile(
+                    storage_path('example_trip.gpx'),
+                    'trip.gpx'
+                ),
+                true
+            )
+        ]);
+
+        $this->seeJsonEquals(['name' => ['The name has already been taken.']]);
+    }
 }
