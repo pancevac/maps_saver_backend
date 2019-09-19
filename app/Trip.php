@@ -81,7 +81,7 @@ class Trip extends Model
      */
     public function path()
     {
-        return route('trips.show', $this);
+        return route('trips.show', ['id' => $this]);
     }
 
     /**
@@ -91,7 +91,7 @@ class Trip extends Model
      */
     public function gpxPath()
     {
-        return route('trips.gpx', $this);
+        return route('trips.gpx', ['id' => $this]);
     }
 
     /**

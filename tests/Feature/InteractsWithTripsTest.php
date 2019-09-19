@@ -3,7 +3,10 @@
 namespace Tests\Feature;
 
 
+use App\Utils\GpxConverter;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use phpGPX\phpGPX;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 
 class InteractsWithTripsTest extends \TestCase
@@ -110,5 +113,48 @@ class InteractsWithTripsTest extends \TestCase
         ]);
 
         $this->seeJsonEquals(['name' => ['The name has already been taken.']]);
+    }
+
+    /** @test */
+    function a_logged_user_can_see_his_saved_trip_represented_in_xml()
+    {
+        $this->signIn($this->user);
+
+        $trip = factory(\App\Trip::class)->create(['user_id' => $this->user->id]);
+
+        $trip->load(['waypoints', 'tracks', 'routes']);
+
+        $gpxConverter = new GpxConverter(new Request, new phpGPX);
+
+        $gpx = $gpxConverter->generateGpxFile($trip);
+
+        $xml = $gpx->toXML()->saveXML();
+
+        $this->get($trip->gpxPath())
+            ->seeJson(['response' => $xml]);
+    }
+
+    /** @test */
+    function a_logged_user_can_see_his_saved_trip_info()
+    {
+        $this->signIn($this->user);
+
+        $trip = factory(\App\Trip::class)->create(['user_id' => $this->user->id]);
+
+        $this->get($trip->path())
+            ->seeJsonContains(['name' => $trip->name]);
+    }
+
+    /** @test */
+    function a_logged_user_can_not_see_someone_else_trip_xml()
+    {
+        $this->signIn($this->user);
+
+        $anotherUser = factory(\App\User::class)->create();
+
+        $trip = factory(\App\Trip::class)->create(['user_id' => $anotherUser->id]);
+
+        $this->get($trip->gpxPath())
+            ->seeStatusCode(404);
     }
 }

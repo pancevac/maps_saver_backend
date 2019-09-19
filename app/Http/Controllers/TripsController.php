@@ -21,9 +21,30 @@ class TripsController extends Controller
         ]);
     }
 
-    public function show($id)
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function show(int $id)
     {
-        //
+        return Trip::findOrFail($id);
+    }
+
+    /**
+     * @param int $id
+     * @param GpxConverter $gpxConverter
+     * @return array
+     */
+    public function getGpx(int $id, GpxConverter $gpxConverter)
+    {
+        $trip = Trip::findOrFail($id);
+
+        return [
+            'response' => $gpxConverter
+                ->generateGpxFile($trip)
+                ->toXML()
+                ->saveXML()
+        ];
     }
 
     /**
