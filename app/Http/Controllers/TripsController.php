@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostResource;
 use App\Rules\IsGpxFile;
 use App\Trip;
 use App\Utils\GpxConverter;
@@ -12,22 +13,20 @@ use Illuminate\Validation\Rule;
 class TripsController extends Controller
 {
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        return response()->json([
-            'trips' => Trip::latest()->get()
-        ]);
+        return PostResource::collection(Trip::latest()->get());
     }
 
     /**
      * @param int $id
-     * @return mixed
+     * @return PostResource
      */
     public function show(int $id)
     {
-        return Trip::findOrFail($id);
+        return new PostResource(Trip::findOrFail($id));
     }
 
     /**
