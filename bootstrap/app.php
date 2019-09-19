@@ -60,6 +60,10 @@ $app->singleton(
 // $app->middleware([
 //     App\Http\Middleware\ExampleMiddleware::class
 // ]);
+$app->middleware([
+    // ...
+    \Barryvdh\Cors\HandleCors::class,
+]);
 
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
@@ -85,6 +89,7 @@ $app->register(App\Providers\AuthServiceProvider::class);
  */
 $app->register(Laravel\Passport\PassportServiceProvider::class);
 $app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
+$app->register(Barryvdh\Cors\ServiceProvider::class);
 $app->register(Laravel\Tinker\TinkerServiceProvider::class);
 $app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
 
@@ -99,6 +104,7 @@ if (env('APP_ENV') === 'local') {
  */
 $app->configure('auth');
 $app->configure('passport');
+$app->configure('cors');
 
 /*
 |--------------------------------------------------------------------------
