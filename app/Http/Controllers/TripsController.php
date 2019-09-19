@@ -90,8 +90,18 @@ class TripsController extends Controller
         //
     }
 
-    public function destroy($id)
+    /**
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse|void
+     */
+    public function destroy(int $id)
     {
-        //
+        // Trip is protected by deleting from another user
+        // by global scope OwnerScope
+        if (Trip::destroy($id)) {
+            return response()->json(['success' => 'Successfully deleted trip.']);
+        }
+
+        return abort(404);
     }
 }

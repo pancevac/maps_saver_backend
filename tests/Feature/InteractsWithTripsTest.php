@@ -157,4 +157,41 @@ class InteractsWithTripsTest extends \TestCase
         $this->get($trip->gpxPath())
             ->seeStatusCode(404);
     }
+
+    /** @test */
+    function a_logged_user_can_delete_his_trip()
+    {
+        $this->signIn($this->user);
+
+        $trip = factory(\App\Trip::class)
+            ->create(['user_id' => $this->user->id])
+            ->load('tracks');
+
+        $this->delete($trip->path())
+            ->seeJson(['success' => 'Successfully deleted trip.']);
+
+
+        $this->missingFromDatabase('trips', ['id' => $trip->id]);
+        $this->missingFromDatabase('tracks', ['id' => $trip->tracks[0]->id]);
+        $this->missingFromDatabase('points', ['id' => $trip->tracks[0]->points[0]->id]);
+    }
+
+    /** @test */
+    function a_logged_user_can_not_delete_trip_by_another_owner()
+    {
+        $this->signIn($this->user);
+
+        $anotherUser = factory(\App\User::class)->create();
+
+        $trip = factory(\App\Trip::class)
+            ->create(['user_id' => $anotherUser->id])
+            ->load('tracks');
+
+        $this->delete($trip->path())
+            ->assertResponseStatus(404);
+
+        $this->seeInDatabase('trips', ['id' => $trip->id]);
+        $this->seeInDatabase('tracks', ['id' => $trip->tracks[0]->id]);
+        $this->seeInDatabase('points', ['id' => $trip->tracks[0]->points[0]->id]);
+    }
 }
